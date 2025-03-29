@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # cronometro
 
 A new Flutter project.
@@ -14,3 +15,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# cronometro
+>>>>>>> 7a19aa87391562df2d1240fef0ed9b07e03268b7
