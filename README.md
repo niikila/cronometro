@@ -1,4 +1,5 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
 # cronometro
 
 A new Flutter project.
@@ -18,3 +19,6 @@ samples, guidance on mobile development, and a full API reference.
 =======
 # cronometro
 >>>>>>> 7a19aa87391562df2d1240fef0ed9b07e03268b7
+=======
+
+>>>>>>> f0285198b13709e1466258e38a5364e7f91b09fc

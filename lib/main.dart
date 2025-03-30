@@ -63,7 +63,7 @@ class TimerViewModel extends ChangeNotifier {
       _laps.insert(0, {
         'vuelta': _formatTime(_stopwatch.elapsedMilliseconds),
         'total': elapsedTime,
-      });
+      });git pu
       notifyListeners();
     }
   }
