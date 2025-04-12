@@ -1,11 +1,20 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:cronometro/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cronometro/notifications/notification_service.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.initialize(); // INICIALIZA AS NOTIFICAÇÕES
+  await Permission.notification.request(); // ES NECESARIO AUTORIZAR POR LA VERSION
+  runApp(MyApp());}
+
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -16,7 +25,7 @@ class MyApp extends StatelessWidget {
       create: (context) => TimerViewModel(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Cronômetro',
+        title: 'CRONOMETRO', // TITULO DE LA BARRA
         theme: ThemeData.dark(),
         home: const TimerScreen(),
       ),
@@ -37,36 +46,56 @@ class TimerViewModel extends ChangeNotifier {
   String get elapsedTime => _formatTime(_stopwatch.elapsedMilliseconds);
   List<Map<String, String>> get laps => _laps;
 
-  void startTimer() {
+  void startTimer() { // INICIAR CRONOMETRO
     if (!_stopwatch.isRunning) {
       _stopwatch.start();
       _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
         notifyListeners();
       });
+
+      NotificationService.showOngoingNotification(
+        "Cronômetro em andamento",
+        "Tempo: ${elapsedTime}",
+      );
     }
   }
 
-  void pauseTimer() {
+  void pauseTimer() { // PAUSAR CRONOMETRO
     _stopwatch.stop();
     _timer?.cancel();
     notifyListeners();
+
+    NotificationService.cancelOngoingNotification();
+
+    // Notificação após 10 segundos de pausa
+    Timer(const Duration(seconds: 10), () {
+      if (!_stopwatch.isRunning) {
+        NotificationService.showPauseReminder();
+      }
+    });
   }
 
-  void resetTimer() {
+  void resetTimer() { // REINCIAR CRONOMETRO
     _stopwatch.reset();
     _laps.clear();
     notifyListeners();
+    NotificationService.cancelOngoingNotification();
   }
 
-  void addLap() {
+
+  void addLap() { // REGISTRAR VUELTA
     if (_stopwatch.isRunning) {
+      String lapTime = _formatTime(_stopwatch.elapsedMilliseconds);
       _laps.insert(0, {
-        'vuelta': _formatTime(_stopwatch.elapsedMilliseconds),
+        'vuelta': lapTime,
         'total': elapsedTime,
-      });git pu
+      });
       notifyListeners();
+
+      NotificationService.showLapNotification(lapTime, elapsedTime);
     }
   }
+
 
   String _formatTime(int milliseconds) {
     int centiseconds = (milliseconds / 10).truncate();
@@ -80,6 +109,8 @@ class TimerViewModel extends ChangeNotifier {
   }
 }
 
+
+
 class TimerScreen extends StatelessWidget {
   const TimerScreen({super.key});
 
@@ -88,10 +119,14 @@ class TimerScreen extends StatelessWidget {
     final timerViewModel = Provider.of<TimerViewModel>(context);
 
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.black12, // FONDO
       appBar: AppBar(
-        title: const Text('Cronometro', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
+        title: const Text(
+            'CRONOMETRO',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,)),
+             backgroundColor: Colors.black12,
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -189,7 +224,7 @@ class TimerPainter extends CustomPainter {
       ..strokeWidth = 8.0;
 
     Paint progressPaint = Paint()
-      ..color = Colors.orange
+      ..color = Colors.orangeAccent
       ..style = PaintingStyle.stroke
       ..strokeWidth = 8.0
       ..strokeCap = StrokeCap.round;
