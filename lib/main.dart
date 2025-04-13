@@ -157,11 +157,13 @@ class TimerScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 50),
+
           // Botones
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              // SEMANTICS BOTONES
               children: [
                 Semantics(
                   label: 'Iniciar cronômetro',
@@ -214,7 +216,7 @@ class TimerScreen extends StatelessWidget {
     );
   }
 
-  // Widget para construir botones estilizados
+  // Widget Botones estilizados
   Widget _buildButton(String text, VoidCallback onPressed) {
     return ElevatedButton(
       onPressed: onPressed,
@@ -228,7 +230,7 @@ class TimerScreen extends StatelessWidget {
   }
 }
 
-// Círculo animado que muestra el progreso
+// CIRCULO ANIMADO
 class TimerPainter extends CustomPainter {
   final double progress;
 
