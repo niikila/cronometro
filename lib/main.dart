@@ -6,15 +6,12 @@ import 'package:provider/provider.dart';
 import 'package:cronometro/notifications/notification_service.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.initialize(); // INICIALIZA AS NOTIFICAÇÕES
   await Permission.notification.request(); // ES NECESARIO AUTORIZAR POR LA VERSION
-  runApp(MyApp());}
-
-
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -82,7 +79,6 @@ class TimerViewModel extends ChangeNotifier {
     NotificationService.cancelOngoingNotification();
   }
 
-
   void addLap() { // REGISTRAR VUELTA
     if (_stopwatch.isRunning) {
       String lapTime = _formatTime(_stopwatch.elapsedMilliseconds);
@@ -96,7 +92,6 @@ class TimerViewModel extends ChangeNotifier {
     }
   }
 
-
   String _formatTime(int milliseconds) {
     int centiseconds = (milliseconds / 10).truncate();
     int seconds = (centiseconds / 100).truncate();
@@ -109,8 +104,6 @@ class TimerViewModel extends ChangeNotifier {
   }
 }
 
-
-
 class TimerScreen extends StatelessWidget {
   const TimerScreen({super.key});
 
@@ -122,70 +115,95 @@ class TimerScreen extends StatelessWidget {
       backgroundColor: Colors.black12, // FONDO
       appBar: AppBar(
         title: const Text(
-            'CRONOMETRO',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,)),
-             backgroundColor: Colors.black12,
+          'CRONOMETRO',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: Colors.black12,
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Círculo animado
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(
-                begin: 0, end: timerViewModel.elapsedMilliseconds / 60000),
-            duration: const Duration(milliseconds: 100),
-            builder: (context, value, child) {
-              return CustomPaint(
-                painter: TimerPainter(progress: value),
-                child: SizedBox(
-                  width: 200,
-                  height: 200,
-                  child: Center(
-                    child: Text(
-                      timerViewModel.elapsedTime,
-                      style: const TextStyle(
-                          fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white),
+          Padding(
+            padding: const EdgeInsets.only(top: 80),
+            child: Semantics(
+              label: 'Progresso do cronômetro: ${timerViewModel.elapsedTime}', // Descripción accesible
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(begin: 0, end: timerViewModel.elapsedMilliseconds / 60000),
+                duration: const Duration(milliseconds: 100),
+                builder: (context, value, child) {
+                  return CustomPaint(
+                    painter: TimerPainter(progress: value),
+                    child: SizedBox(
+                      width: 200,
+                      height: 200,
+                      child: Center(
+                        child: Text(
+                          timerViewModel.elapsedTime,
+                          style: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              );
-            },
+                  );
+                },
+              ),
+            ),
           ),
-
           const SizedBox(height: 50),
-
           // Botones
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(horizontal: 5),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildButton('Iniciar', timerViewModel.startTimer),
-                _buildButton('Pausar', timerViewModel.pauseTimer),
-                _buildButton('Reiniciar', timerViewModel.resetTimer),
-                _buildButton('Vuelta', timerViewModel.addLap),
+                Semantics(
+                  label: 'Iniciar cronômetro',
+                  button: true,
+                  child: _buildButton('Iniciar', timerViewModel.startTimer),
+                ),
+                Semantics(
+                  label: 'Pausar cronômetro',
+                  button: true,
+                  child: _buildButton('Pausar', timerViewModel.pauseTimer),
+                ),
+                Semantics(
+                  label: 'Reiniciar cronômetro',
+                  button: true,
+                  child: _buildButton('Reiniciar', timerViewModel.resetTimer),
+                ),
+                Semantics(
+                  label: 'Registrar volta',
+                  button: true,
+                  child: _buildButton('Vuelta', timerViewModel.addLap),
+                ),
               ],
             ),
           ),
-
           const SizedBox(height: 30),
-
           // Lista de vueltas
           Expanded(
             child: ListView.builder(
               itemCount: timerViewModel.laps.length,
               itemBuilder: (context, index) {
                 final lap = timerViewModel.laps[index];
-                return ListTile(
-                  title: Text(
-                    'Volta ${index + 1}: ${lap['vuelta']}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    'Tempo total: ${lap['total']}',
-                    style: const TextStyle(color: Colors.white70),
+                return Semantics(
+                  label: 'Volta ${index + 1} com tempo: ${lap['vuelta']} e tempo total: ${lap['total']}',
+                  child: ListTile(
+                    title: Text(
+                      'Volta ${index + 1}: ${lap['vuelta']}',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                    subtitle: Text(
+                      'Tempo total: ${lap['total']}',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
                   ),
                 );
               },
