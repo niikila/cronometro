@@ -20,7 +20,7 @@ class NotificationService {
 
   }
 
-  // Notificación persistente al iniciar cronômetro
+  // Notificación  al iniciar cronômetro
   static Future<void> showOngoingNotification(String title, String body) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
@@ -45,14 +45,15 @@ class NotificationService {
     );
   }
 
-  // Notificación cuando se registra una vuelta
+  // Notificación cuando se registra una vuelta - Lap
   static Future<void> showLapNotification(String title, String body) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    const AndroidNotificationDetails androidDetails =
+    AndroidNotificationDetails(
       'laps_channel',
       'Voltas',
       channelDescription: 'Notificações de voltas do cronômetro',
-      importance: Importance.defaultImportance,
-      priority: Priority.defaultPriority,
+      importance: Importance.high,
+      priority: Priority.high,
     );
 
     const NotificationDetails notificationDetails = NotificationDetails(
